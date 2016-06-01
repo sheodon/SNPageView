@@ -13,8 +13,11 @@
 #import "TestPageView_View2.h"
 #import "TestPageView_View3.h"
 #import "TestPageView_View4.h"
+#import "TestLoopPageView.h"
 
 @interface ViewController ()
+
+@property (nonatomic, strong) TestLoopPageView *loopView;
 
 @property (nonatomic, strong) SNPageBar *pageBar;
 
@@ -23,64 +26,105 @@
 
 @implementation ViewController
 
-- (UIBarButtonItem*) repeatItem
+#pragma mark 循环Tab
+- (UIBarButtonItem*) repeatTabItem
 {
-    return [UIBarButtonItem.alloc initWithTitle:@"循环" style:UIBarButtonItemStylePlain target:self action:@selector(handleRepeat)];
+    return [UIBarButtonItem.alloc initWithTitle:@"循环Tab" style:UIBarButtonItemStylePlain target:self action:@selector(handleRepeatTab)];
 }
 
-- (UIBarButtonItem*) noRepeatItem
+- (UIBarButtonItem*) noRepeatTabItem
 {
-    return [UIBarButtonItem.alloc initWithTitle:@"不循环" style:UIBarButtonItemStylePlain target:self action:@selector(handleNoRepeat)];
+    return [UIBarButtonItem.alloc initWithTitle:@"不循环Tab" style:UIBarButtonItemStylePlain target:self action:@selector(handleNoRepeatTab)];
 }
 
-- (void) handleRepeat
+- (void) handleRepeatTab
 {
     self.pageBar.pageView.repeatScroll = YES;
     
-    self.navigationItem.leftBarButtonItem = [self noRepeatItem];
+    self.navigationItem.rightBarButtonItem = [self noRepeatTabItem];
 }
 
-- (void) handleNoRepeat
+- (void) handleNoRepeatTab
 {
     self.pageBar.pageView.repeatScroll = NO;
     
-    self.navigationItem.leftBarButtonItem = [self repeatItem];
+    self.navigationItem.rightBarButtonItem = [self repeatTabItem];
+}
+
+#pragma mark loop page
+- (UIBarButtonItem*) repeatLoopPage
+{
+    return [UIBarButtonItem.alloc initWithTitle:@"autoLoopPage" style:UIBarButtonItemStylePlain target:self action:@selector(handleLoopPage)];
+}
+
+- (UIBarButtonItem*) noRepeatLoopPage
+{
+    return [UIBarButtonItem.alloc initWithTitle:@"noAutoLoopPage" style:UIBarButtonItemStylePlain target:self action:@selector(handleNoLoopPage)];
+}
+- (void) handleLoopPage
+{
+    [self.loopView resumeLoopScroll];
+    
+    self.navigationItem.leftBarButtonItem = [self noRepeatLoopPage];
+}
+
+- (void) handleNoLoopPage
+{
+    [self.loopView suspendLoopScroll];
+    
+    self.navigationItem.leftBarButtonItem = [self repeatLoopPage];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor brownColor];
-    self.navigationItem.leftBarButtonItem = [self repeatItem];
+    self.navigationItem.rightBarButtonItem = [self repeatTabItem];
+    self.navigationItem.leftBarButtonItem = [self noRepeatLoopPage];
     self.navigationItem.title = @"PageView";
     
-    CGFloat kTopSide = 60;
+    [self buildLoopPageView];
+    
+    [self buildPageViewBar];
+}
+
+- (void) buildLoopPageView
+{
+    self.loopView = [TestLoopPageView.alloc initWithFrame:CGRectMake(0, 60, self.view.sn_width, 100)];
+    [self.view addSubview:self.loopView];
+}
+
+#pragma mark Tab PageView
+- (void) buildPageViewBar
+{
+    CGFloat kTopSide = self.loopView.sn_bottom + 20;
     
     CGFloat kPageBarHeight = 40;
     CGFloat kPageContentHeight = self.view.sn_height - kTopSide - kPageBarHeight;
     
     // 设置TabBar 高度
     self.pageBar = [SNPageBar.alloc initWithFrame:CGRectMake(0, kTopSide, self.view.sn_width, kPageBarHeight)];
-    
     [self.view addSubview:self.pageBar];
     
-    TestPageView_View1 *view1 = [TestPageView_View1.alloc initWithFrame:CGRectMake(0, 0, _pageBar.sn_width, kPageContentHeight)];
+    CGRect contentFrame = CGRectMake(0, 0, _pageBar.sn_width, kPageContentHeight);
+    
+    TestPageView_View1 *view1 = [TestPageView_View1.alloc initWithFrame:contentFrame];
     
     SNPageBarItem *item1 = [self newPageItemWithContentView:view1 index:@"1"];
     item1.contentView.backgroundColor = [UIColor darkGrayColor];
     [_pageBar addItem:item1];
     
-    TestPageView_View2 *view2 = [TestPageView_View2.alloc initWithFrame:CGRectMake(0, 0, _pageBar.sn_width, kPageContentHeight)];
+    TestPageView_View2 *view2 = [TestPageView_View2.alloc initWithFrame:contentFrame];
     SNPageBarItem *item2 = [self newPageItemWithContentView:view2 index:@"2"];
     item2.contentView.backgroundColor = [UIColor redColor];
     [_pageBar addItem:item2];
     
-    TestPageView_View3 *view3 = [TestPageView_View3.alloc initWithFrame:CGRectMake(0, 0, _pageBar.sn_width, kPageContentHeight)];
+    TestPageView_View3 *view3 = [TestPageView_View3.alloc initWithFrame:contentFrame];
     SNPageBarItem *item3 = [self newPageItemWithContentView:view3 index:@"3"];
     item3.contentView.backgroundColor = [UIColor blueColor];
     [_pageBar addItem:item3];
     
-    TestPageView_View4 *view4 = [TestPageView_View4.alloc initWithFrame:CGRectMake(0, 0, _pageBar.sn_width, kPageContentHeight)];
+    TestPageView_View4 *view4 = [TestPageView_View4.alloc initWithFrame:contentFrame];
     SNPageBarItem *item4 = [self newPageItemWithContentView:view4 index:@"4"];
     item4.contentView.backgroundColor = [UIColor greenColor];
     [_pageBar addItem:item4];
@@ -108,6 +152,15 @@
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [self.loopView resumeLoopScroll];
+}
+
+- (void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [self.loopView suspendLoopScroll];
 }
 
 @end

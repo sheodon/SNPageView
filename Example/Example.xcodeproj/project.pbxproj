@@ -28,6 +28,7 @@
 		8A4359791CFC516500928E4A /* TestPageView_View2.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A4359731CFC516500928E4A /* TestPageView_View2.m */; };
 		8A43597A1CFC516500928E4A /* TestPageView_View3.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A4359751CFC516500928E4A /* TestPageView_View3.m */; };
 		8A43597B1CFC516500928E4A /* TestPageView_View4.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A4359771CFC516500928E4A /* TestPageView_View4.m */; };
+		8A6172F21CFD4E2700B35DD3 /* TestLoopPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A6172F11CFD4E2700B35DD3 /* TestLoopPageView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,8 @@
 		8A4359751CFC516500928E4A /* TestPageView_View3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPageView_View3.m; sourceTree = "<group>"; };
 		8A4359761CFC516500928E4A /* TestPageView_View4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestPageView_View4.h; sourceTree = "<group>"; };
 		8A4359771CFC516500928E4A /* TestPageView_View4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPageView_View4.m; sourceTree = "<group>"; };
+		8A6172F01CFD4E2700B35DD3 /* TestLoopPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestLoopPageView.h; sourceTree = "<group>"; };
+		8A6172F11CFD4E2700B35DD3 /* TestLoopPageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestLoopPageView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +148,8 @@
 				8A4359201CFC50C500928E4A /* AppDelegate.m */,
 				8A4359221CFC50C500928E4A /* ViewController.h */,
 				8A4359231CFC50C500928E4A /* ViewController.m */,
+				8A6172F01CFD4E2700B35DD3 /* TestLoopPageView.h */,
+				8A6172F11CFD4E2700B35DD3 /* TestLoopPageView.m */,
 				8A43596F1CFC514400928E4A /* pages */,
 				8A4359251CFC50C500928E4A /* Main.storyboard */,
 				8A4359281CFC50C500928E4A /* Assets.xcassets */,
@@ -399,6 +404,7 @@
 				8A43591E1CFC50C500928E4A /* main.m in Sources */,
 				8A43596D1CFC50E200928E4A /* SNPageViewItem.m in Sources */,
 				8A43596E1CFC50E200928E4A /* SNTabBar.m in Sources */,
+				8A6172F21CFD4E2700B35DD3 /* TestLoopPageView.m in Sources */,
 				8A4359691CFC50E200928E4A /* SNPageBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -625,6 +631,7 @@
 				8A4359481CFC50C500928E4A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8A4359491CFC50C500928E4A /* Build configuration list for PBXNativeTarget "ExampleTests" */ = {
 			isa = XCConfigurationList;
@@ -633,6 +640,7 @@
 				8A43594B1CFC50C500928E4A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8A43594C1CFC50C500928E4A /* Build configuration list for PBXNativeTarget "ExampleUITests" */ = {
 			isa = XCConfigurationList;
@@ -641,6 +649,7 @@
 				8A43594E1CFC50C500928E4A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

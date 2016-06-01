@@ -29,9 +29,7 @@
 @property (nonatomic, assign) CGPoint       lastPoit;
 
 @property (nonatomic, assign) BOOL                      blockEvent;
-@property (nonatomic, assign) NSInteger                 scrolIndex;
-@property (nonatomic, assign) NSInteger                 lastPageIndex;
-@property (nonatomic, assign) SNPageViewScrollDirection lastDirection;
+@property (nonatomic, assign) BOOL                      blockHandleDidScroll;
 
 @property (nonatomic, strong) SNPageViewItemEx *itemWillAppear;
 @property (nonatomic, strong) SNPageViewItemEx *itemWillDisappear;
@@ -153,12 +151,14 @@
     BOOL isBLoaded = _loaded;
     _loaded = YES;
     
+    [_pageViews.allValues makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    [_pageViews removeAllObjects];
+    
     if (_delegate && [_delegate respondsToSelector:@selector(sn_pageViewForPageNumbers:)]) {
         _pageCount = [_delegate sn_pageViewForPageNumbers:self];
     }
     
     CGFloat totalWidth = self.sn_width * _pageCount;
-    
     if (self.repeatScroll) {
         self.scrollView.contentSize = CGSizeMake(totalWidth + self.sn_width * 2, self.sn_height);
     }
@@ -166,13 +166,11 @@
         self.scrollView.contentSize = CGSizeMake(totalWidth, self.sn_height);
     }
     
-    [_pageViews.allValues makeObjectsPerformSelector:@selector(removeFromSuperview)];
-    [_pageViews removeAllObjects];
-    
     [self makeViewVisibleAtIndex:_currentIndex];
     
     if (!isBLoaded) {
         [self dispatchWillEventWithIndex:_currentIndex isAppear:YES];
+        [self dispatchDidEventWithIndex:_currentIndex isAppear:YES];
     }
     else {
         [self dispatchWillEventWithIndex:_currentIndex isAppear:NO];
@@ -207,10 +205,7 @@
 #pragma mark
 - (void) cleanupWillScrollStatus
 {
-    self.scrolIndex = self.currentIndex;
     self.lastPoit = _scrollView.contentOffset;
-    self.lastDirection = SNPageViewScrollDirectionNone;
-    self.lastPageIndex = self.currentIndex;
     self.blockEvent = NO;
     
     self.itemWillAppear = nil;
@@ -291,6 +286,9 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+    if (self.blockHandleDidScroll) {
+        return;
+    }
     SNPageViewScrollDirection direction = [self isMoveToLeftWithPoint:scrollView.contentOffset];
     
     float offset = scrollView.contentOffset.x / scrollView.frame.size.width;
@@ -363,8 +361,8 @@
     disappearItem.view = [self viewAtIndex:disappearIndex];
     disappearItem.percent = 1.f;
     if (disappearItem.index >= 0 && disappearItem.index < _pageCount ) {
-        if ([_delegate respondsToSelector:@selector(sn_pageView:itemWillDisappear:)]) {
-            [_delegate sn_pageView:self itemDidAppear:disappearItem];
+        if ([_delegate respondsToSelector:@selector(sn_pageView:itemDidDisappear:)]) {
+            [_delegate sn_pageView:self itemDidDisappear:disappearItem];
         }
     }
     
@@ -377,8 +375,34 @@
     appearItem.percent = 1.f;
     
     if (appearItem.index >= 0 && appearItem.index < _pageCount ) {
-        if ([_delegate respondsToSelector:@selector(sn_pageView:itemWillAppear:)]) {
+        if ([_delegate respondsToSelector:@selector(sn_pageView:itemDidAppear:)]) {
             [_delegate sn_pageView:self itemDidAppear:appearItem];
+        }
+    }
+}
+
+- (void) dispatchDidEventWithIndex:(NSInteger)index isAppear:(BOOL)isAppear
+{
+    if (self.blockEvent) {
+        return;
+    }
+    
+    SNPageViewItemEx *item = [SNPageViewItemEx.alloc init];
+    item.direction = SNPageViewScrollDirectionNone;
+    item.index = [self validateOverIndex:index];
+    item.view = [self viewAtIndex:index];
+    
+    if (item.index < 0 && item.index >= _pageCount ) {
+        return;
+    }
+    if (isAppear) {
+        if ([_delegate respondsToSelector:@selector(sn_pageView:itemDidAppear:)]) {
+            [_delegate sn_pageView:self itemDidAppear:item];
+        }
+    }
+    else {
+        if ([_delegate respondsToSelector:@selector(sn_pageView:itemDidDisappear:)]) {
+            [_delegate sn_pageView:self itemDidDisappear:item];
         }
     }
 }
@@ -491,11 +515,14 @@
 
 - (void) makeViewVisibleAtIndex:(NSInteger)pageIndex
 {
+    self.blockHandleDidScroll = YES;
+    
     [self visibleViewAtIndex:pageIndex];
     
-    CGRect rect = CGRectMake([self positiveIndex:pageIndex] * _scrollView.sn_width, 0, _scrollView.sn_width, _scrollView.sn_height);
+    CGRect rect = CGRectMake([self positiveIndex:pageIndex] * self.sn_width, 0, self.sn_width, self.sn_height);
     
     [self.scrollView scrollRectToVisible:rect animated:NO];
+    self.blockHandleDidScroll = NO;
 }
 
 - (UIView*) visibleViewAtIndex:(NSInteger)pageIndex
@@ -507,11 +534,15 @@
     if (viewIndex < 0) {
         return nil;
     }
+   
+    if (ABS(_scrollView.contentOffset.y) > 0.00001) {
+        _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, 0);
+    }
     
     NSString *key = [NSString stringWithFormat:@"%ld", (long)viewIndex];
     UIView *view = [_pageViews objectForKey:key];
     if (view != nil) {
-        view.frame = CGRectMake([self positiveIndex:pageIndex] * _scrollView.sn_width, 0, view.sn_width, view.sn_height);
+        view.frame = CGRectMake([self positiveIndex:pageIndex] * self.sn_width, 0, view.sn_width, view.sn_height);
         return view;
     }
     
@@ -521,7 +552,7 @@
     if (view) {
         [_pageViews setObject:view forKey:key];
         
-        view.frame = CGRectMake([self positiveIndex:pageIndex] * _scrollView.sn_width, 0, view.sn_width, view.sn_height);
+        view.frame = CGRectMake([self positiveIndex:pageIndex] * self.sn_width, 0, view.sn_width, view.sn_height);
         [_scrollView addSubview:view];
     }
     
