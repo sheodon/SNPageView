@@ -74,6 +74,8 @@
 
 - (void) selectItemWithIndex:(NSInteger)index animated:(BOOL)animated force:(BOOL)force
 {
+    [self.pageView scrollToPageAtIndex:index animated:animated];
+    
     [super selectItemWithIndex:index animated:animated force:force];
     
     SNPageBarItem *item = (SNPageBarItem*)self.items[index];
@@ -83,8 +85,6 @@
     else{
         self.sn_height = self.tabBarHeight;
     }
-    
-    [self.pageView scrollToPageAtIndex:index animated:animated];
 }
 
 #pragma mark
