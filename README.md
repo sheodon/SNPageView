@@ -4,7 +4,7 @@
 [![Platform](https://img.shields.io/cocoapods/p/SNPageView.svg?style=flat)](http://cocoapods.org/pods/SNPageView)
 [![GitHub stars](https://img.shields.io/github/stars/sheodon/SNPageView.svg)](https://github.com/sheodon/SNPageView/stargazers)
 
-A pop over menu which is maybe the easiest one to use.
+分页滚动控件，可实现轮播（support page view and tab page view）by Objective-C
 
 ## ScreenShots
 
