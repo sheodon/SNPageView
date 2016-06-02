@@ -88,6 +88,14 @@
     }
 }
 
+- (void) setCurrentIndex:(NSInteger)currentIndex
+{
+    if (_currentIndex == currentIndex) {
+        return;
+    }
+    [self scrollToPageAtIndex:currentIndex animated:NO];
+}
+
 - (void) layoutSubviews
 {
     [super layoutSubviews];
