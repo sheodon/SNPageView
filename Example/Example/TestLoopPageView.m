@@ -83,15 +83,15 @@
 
 - (void) resumeLoopScroll
 {
-//    [self _beginTimer];
+    [self _beginTimer];
 }
 
 - (void) suspendLoopScroll
 {
-//    if (_timer && [_timer isValid]) {
-//        [_timer invalidate];
-//        _timer = nil;
-//    }
+    if (_timer && [_timer isValid]) {
+        [_timer invalidate];
+        _timer = nil;
+    }
 }
 
 #pragma mark SNPageViewDelegate

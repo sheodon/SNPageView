@@ -36,9 +36,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) NSMutableArray<SNTabBarItem*>  *items;
 /// tabbar 的高度
 @property (nonatomic, assign) CGFloat tabBarHeight;
-/// 默认2.0
+/// default:0.5
 @property (nonatomic, assign) CGFloat tabLineWidth;
-/// 默认3.0f
+/// default:4.0
 @property (nonatomic, assign) CGFloat tipLineWidth;
 /// 当前选中的item
 @property (nonatomic, assign) NSInteger selectedIndex;
@@ -79,11 +79,11 @@ typedef enum : NSUInteger {
 // 是否允许被选中，默认为YES（当为NO时被点击后触发clicked事件）
 @property (nonatomic, assign)   BOOL        isAllowSelected;
 
-@property (nonatomic, assign)   SNTabBar    *tabBar;
+@property (nonatomic, weak)   SNTabBar    *tabBar;
 
-@property (nonatomic, assign)   id          target;
-@property (nonatomic, assign)   SEL         action;
-@property (nonatomic, assign)   SNTabBarItemStatus status;
+@property (nonatomic, weak)   id          target;
+@property (nonatomic, assign) SEL         action;
+@property (nonatomic, assign) SNTabBarItemStatus status;
 
 - (void) clicked;
 

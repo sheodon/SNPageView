@@ -12,27 +12,31 @@
 @class SNPageView;
 @protocol SNPageViewDelegate <NSObject>
 
-@optional
+@required
 /// return page numbers
 - (NSInteger) sn_pageViewForPageNumbers:(SNPageView *)pageView;
-///
+/// return UIView at index;
 - (UIView*) sn_pageView:(SNPageView *)pageView viewAtIndex:(NSInteger)index;
 
+@optional
+/// called just one time
 - (void) sn_pageView:(SNPageView *)pageView itemDidAppear:(SNPageViewItem *)item;
+/// called just one time
 - (void) sn_pageView:(SNPageView *)pageView itemDidDisappear:(SNPageViewItem *)item;
-
+/// called many times
 - (void) sn_pageView:(SNPageView *)pageView itemWillAppear:(SNPageViewItem *)item;
+/// called many times
 - (void) sn_pageView:(SNPageView *)pageView itemWillDisappear:(SNPageViewItem *)item;
-///
+/// called many times
 - (void) sn_pageView:(SNPageView *)pageView itemWillAppear:(SNPageViewItem *)appearItem itemWillDisappear:(SNPageViewItem *)disappearItem;
 
 @end
 
 #pragma mark  SNPageView
 @interface SNPageView : UIView
-/// 是否循环滚动(默认为 NO)
+/// 是否循环滚动(default:NO)
 @property (nonatomic, assign)   BOOL          repeatScroll;
-/// 当前页数（默认为0）
+/// 当前页数 (default:0）
 @property (nonatomic, assign)   NSInteger     currentIndex;
 
 @property (nonatomic, readonly) UIScrollView  *scrollView;

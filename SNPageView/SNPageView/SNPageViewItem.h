@@ -20,7 +20,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) NSInteger index;
 @property (nonatomic, assign) SNPageViewScrollDirection direction;
 
-/// 出现或者消失百分百
+/// 出现或者消失百分百(appear or disappear percent)
 @property (nonatomic, assign) CGFloat   percent;
 
 - (id) copy;

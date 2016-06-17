@@ -63,13 +63,13 @@ static NSString *const kSNBlackClr = @"404040";
     
     // 标签底线
     _itemLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tipLineWidth, 0.0f, _tipLineWidth)];
-    _itemLineView.backgroundColor = kSNCommonClr.color;
+    _itemLineView.backgroundColor = kSNCommonClr.sn_color;
     _itemLineView.layer.zPosition = MAXFLOAT;
     [self addSubview:_itemLineView];
     
     // tab底线
     UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tabLineWidth, size.width, _tabLineWidth)];
-    lineView.backgroundColor = kSNCommonClr.color;
+    lineView.backgroundColor = kSNCommonClr.sn_color;
     lineView.layer.zPosition = MAXFLOAT;
     [self addSubview:lineView];
 }
@@ -393,8 +393,8 @@ static NSString *const kSNBlackClr = @"404040";
         _titleLabel.font = [UIFont systemFontOfSize:17];
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.textColor = kSNBlackClr.color;
-        _titleLabel.highlightedTextColor = kSNCommonClr.color;
+        _titleLabel.textColor = kSNBlackClr.sn_color;
+        _titleLabel.highlightedTextColor = kSNCommonClr.sn_color;
         [self addSubview:_titleLabel];
         
         [self _initWithTarget:target acion:action];

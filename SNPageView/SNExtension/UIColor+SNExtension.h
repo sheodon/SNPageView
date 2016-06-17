@@ -10,11 +10,11 @@
 
 @interface UIColor(SNExtension)
 
-+ (UIColor*) colorWithRed255:(CGFloat)red green255:(CGFloat)green blue255:(CGFloat)blue alpha:(CGFloat)alpha;
-+ (UIColor*) colorWithHex:(NSUInteger)hex;
-+ (UIColor*) colorWithAlphaHex:(NSUInteger)hex;
-+ (UIColor*) colorWithHexString:(NSString*)string16;
++ (UIColor*) sn_colorWithRed255:(CGFloat)red green255:(CGFloat)green blue255:(CGFloat)blue alpha:(CGFloat)alpha;
++ (UIColor*) sn_colorWithHex:(NSUInteger)hex;
++ (UIColor*) sn_colorWithAlphaHex:(NSUInteger)hex;
++ (UIColor*) sn_colorWithHexString:(NSString*)string16;
 
-+ (UIColor*) randomColor;
++ (UIColor*) sn_randomColor;
 
 @end

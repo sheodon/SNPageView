@@ -11,6 +11,6 @@
 @interface NSString(SNColor)
 
 // hex string to UIColor
-- (UIColor*) color;
+- (UIColor*) sn_color;
 
 @end

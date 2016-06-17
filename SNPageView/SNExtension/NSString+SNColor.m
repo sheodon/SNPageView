@@ -11,8 +11,8 @@
 
 @implementation NSString(SNColor)
 
-- (UIColor*) color {
-    return [UIColor colorWithHexString:self];
+- (UIColor*) sn_color {
+    return [UIColor sn_colorWithHexString:self];
 }
 
 @end
