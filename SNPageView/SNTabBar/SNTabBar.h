@@ -1,9 +1,9 @@
 //
 //  SNTabBar.h
-//  Help_Help
+//  SNPageView
 //
-//  Created by admin on 14/12/15.
-//  Copyright (c) 2014年 TangYanQiong. All rights reserved.
+//  Created by sheodon on 16/5/27.
+//  Copyright (c) 2016年 sheodon. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -45,6 +45,12 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, weak) id<SNTabBarDelegate> delegate;
 
+/// 最小Item的宽度，当平均宽度小余minItemWidth时采用minItemWidth；default:74
+@property (nonatomic, assign) CGFloat   minItemWidth;
+
+///
+- (NSUInteger) indexOfItem:(SNTabBarItem*)item;
+
 /// 添加 item
 - (void) addItem:(SNTabBarItem*)item;
 /// 插入 item
@@ -68,13 +74,11 @@ typedef enum : NSUInteger {
 #pragma mark ---------------------------------------------
 #pragma mark SNTabBarItem
 #pragma mark ---------------------------------------------
-@interface SNTabBarItem : UIView
+@interface SNTabBarItem : UIButton
 
 - (id) initWithTitle:(NSString*)title Target:(id)target action:(SEL)action;
 - (id) initWithImage:(UIImage*)image Target:(id)target action:(SEL)action;
 
-@property (nonatomic, readonly) UILabel     *titleLabel;
-@property (nonatomic, readonly) UIImageView *imageView;
 @property (nonatomic, assign)   CGFloat     fixedWidth; // 固定宽度
 // 是否允许被选中，默认为YES（当为NO时被点击后触发clicked事件）
 @property (nonatomic, assign)   BOOL        isAllowSelected;

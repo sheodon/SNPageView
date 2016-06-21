@@ -1,9 +1,9 @@
 //
 //  SNPageView.h
-//  weibang
+//  SNPageView
 //
 //  Created by sheodon on 16/5/27.
-//  Copyright © 2016年 weibang. All rights reserved.
+//  Copyright © 2016年 sheodon. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

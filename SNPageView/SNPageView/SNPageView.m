@@ -1,9 +1,9 @@
 //
 //  SNPageView.m
-//  weibang
+//  SNPageView
 //
 //  Created by sheodon on 16/5/27.
-//  Copyright © 2016年 weibang. All rights reserved.
+//  Copyright © 2016年 sheodon. All rights reserved.
 //
 
 #import "SNPageView.h"
@@ -73,10 +73,14 @@
 
 - (void) setFrame:(CGRect)frame
 {
+    BOOL isChanged = CGSizeEqualToSize(frame.size, self.frame.size);
     [super setFrame:frame];
     _scrollView.frame = self.bounds;
     if (_scrollView.contentSize.height != frame.size.height) {
         _scrollView.contentSize = CGSizeMake(_scrollView.contentSize.width, frame.size.height);
+    }
+    if (_loaded && !isChanged) {
+        [self reloadData];
     }
 }
 

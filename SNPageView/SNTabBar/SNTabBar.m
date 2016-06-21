@@ -1,9 +1,9 @@
 //
 //  SNTabBar.m
-//  Help_Help
+//  SNPageView
 //
-//  Created by admin on 14/12/15.
-//  Copyright (c) 2014年 TangYanQiong. All rights reserved.
+//  Created by sheodon on 14/12/15.
+//  Copyright (c) 2016年 sheodon. All rights reserved.
 //
 
 #import "SNTabBar.h"
@@ -32,12 +32,16 @@ static NSString *const kSNBlackClr = @"404040";
 @end
 
 #pragma mark SNTabBar implementation
+
+@interface SNTabBar ()
+
+@property (nonatomic, strong) UIView         *itemLineView;
+
+@property (nonatomic, strong) UIScrollView   *scrollView;
+
+@end
+
 @implementation SNTabBar
-{
-    UIView  *_itemLineView;
-    
-    NSMutableArray *_buttons;
-}
 
 - (id) initWithFrame:(CGRect)frame
 {
@@ -52,7 +56,13 @@ static NSString *const kSNBlackClr = @"404040";
 - (void) _initView
 {
     _items = [NSMutableArray array];
-    _buttons = [NSMutableArray array];
+    
+    _scrollView = [UIScrollView.alloc initWithFrame:CGRectMake(0, 0, self.sn_width, self.sn_height)];
+    _scrollView.showsHorizontalScrollIndicator = NO;
+    _scrollView.showsVerticalScrollIndicator   = NO;
+    _scrollView.backgroundColor = [UIColor clearColor];
+    _scrollView.scrollsToTop = NO;
+    [self addSubview:_scrollView];
     
     CGSize size = self.frame.size;
     
@@ -60,12 +70,13 @@ static NSString *const kSNBlackClr = @"404040";
     
     self.tabLineWidth = 0.5;
     self.tipLineWidth = 4.0;
+    self.minItemWidth = 74.f;
     
     // 标签底线
     _itemLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tipLineWidth, 0.0f, _tipLineWidth)];
     _itemLineView.backgroundColor = kSNCommonClr.sn_color;
     _itemLineView.layer.zPosition = MAXFLOAT;
-    [self addSubview:_itemLineView];
+    [self.scrollView addSubview:_itemLineView];
     
     // tab底线
     UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tabLineWidth, size.width, _tabLineWidth)];
@@ -74,20 +85,24 @@ static NSString *const kSNBlackClr = @"404040";
     [self addSubview:lineView];
 }
 
-- (void) addItem:(SNTabBarItem *)item
+- (void) setFrame:(CGRect)frame
 {
-    [self addSubview:item];
-    [_items addObject:item];
-    item.tabBar = self;
-    
-    UIButton *button = [self _buildItemButton];
-    
-    [self addSubview:button];
-    [_buttons addObject:button];
-    
-    if (_layouted) {
+    BOOL isChanged = CGSizeEqualToSize(self.sn_size, frame.size);
+    [super setFrame:frame];
+    self.scrollView.sn_size = frame.size;
+    if (_layouted && !isChanged) {
         [self relayout];
     }
+}
+
+- (NSUInteger) indexOfItem:(SNTabBarItem*)item
+{
+    return [self.items indexOfObject:item];
+}
+
+- (void) addItem:(SNTabBarItem *)item
+{
+    [self addItem:item atIndex:_items.count];
 }
 
 /// 插入 item
@@ -96,34 +111,24 @@ static NSString *const kSNBlackClr = @"404040";
     // 安全处理
     index = MIN(index, _items.count);
     
-    [self addSubview:item];
-    [_items insertObject:item atIndex:index];
-    item.tabBar = self;
-    
-    UIButton *button = [self _buildItemButton];
-    
-    [self addSubview:button];
-    [_buttons insertObject:button atIndex:index];
-    
-    if (index <= _selectedIndex) {
+    if (index <= _selectedIndex && self.items.count > 0) {
         _selectedIndex += 1;
     }
+    
+    item.tabBar = self;
+    
+    [self.items insertObject:item atIndex:index];
+    [self.scrollView addSubview:item];
+    
+    [item addTarget:self action:@selector(_onItemTouchDown:) forControlEvents:UIControlEventTouchDown];
+    [item addTarget:self action:@selector(_onItemDragInside:) forControlEvents:UIControlEventTouchDragInside];
+    [item addTarget:self action:@selector(_onItemDragOutside:) forControlEvents:UIControlEventTouchDragOutside];
+    [item addTarget:self action:@selector(_onItemTouchUpInside:) forControlEvents:UIControlEventTouchUpInside];
+    [item addTarget:self action:@selector(_onItemTouchUpOutside:) forControlEvents:UIControlEventTouchUpOutside];
     
     if (_layouted) {
         [self relayout];
     }
-}
-
-- (UIButton*)_buildItemButton
-{
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.backgroundColor = [UIColor clearColor];
-    [button addTarget:self action:@selector(_onItemTouchDown:) forControlEvents:UIControlEventTouchDown];
-    [button addTarget:self action:@selector(_onItemDragInside:) forControlEvents:UIControlEventTouchDragInside];
-    [button addTarget:self action:@selector(_onItemDragOutside:) forControlEvents:UIControlEventTouchDragOutside];
-    [button addTarget:self action:@selector(_onItemTouchUpInside:) forControlEvents:UIControlEventTouchUpInside];
-    [button addTarget:self action:@selector(_onItemTouchUpOutside:) forControlEvents:UIControlEventTouchUpOutside];
-    return button;
 }
 
 - (void) layoutSubviews
@@ -152,65 +157,55 @@ static NSString *const kSNBlackClr = @"404040";
     SNTabBarItem *item = _items[index];
     [item removeFromSuperview];
     
-    UIButton *button = _buttons[index];
-    [button removeFromSuperview];
-    
     [_items removeObjectAtIndex:index];
-    [_buttons removeObjectAtIndex:index];
     
-    _selectedIndex = MIN(_selectedIndex, _buttons.count - 1);
+    _selectedIndex = MIN(_selectedIndex, _items.count - 1);
     
     if (_layouted) {
         [self relayout];
     }
 }
 
-- (void) _onItemTouchUpInside:(UIButton*)sender
+#pragma mark
+- (void) _onItemTouchUpInside:(SNTabBarItem*)item
 {
-    SNTabBarItem *item = _items[sender.tag];
     if (item.isAllowSelected) {
-        [self selectItemWithIndex:sender.tag animated:YES force:NO];
+        [self selectItemWithIndex:[self indexOfItem:item] animated:YES force:NO];
     }
     else{
         [item clicked];
         if (_delegate && [_delegate respondsToSelector:@selector(SNTabBar:didClickItem:)]) {
             [_delegate SNTabBar:self didClickItem:item];
         }
-        if (item.titleLabel) {
-            item.titleLabel.highlighted = NO;
-        }
+        item.highlighted = NO;
     }
 }
 
-- (void) _onItemTouchUpOutside:(UIButton*)sender
+- (void) _onItemTouchUpOutside:(SNTabBarItem*)item
 {
-    SNTabBarItem *item = _items[sender.tag];
-    if (!item.isAllowSelected && item.titleLabel) {
-        item.titleLabel.highlighted = NO;
+    if (!item.isAllowSelected) {
+        item.highlighted = NO;
     }
 }
 
-- (void) _onItemDragInside:(UIButton*)sender
+- (void) _onItemDragInside:(SNTabBarItem*)item
 {
-    SNTabBarItem *item = _items[sender.tag];
-    if (!item.isAllowSelected && item.titleLabel) {
-        item.titleLabel.highlighted = YES;
+    if (!item.isAllowSelected) {
+        item.highlighted = YES;
     }
 }
 
-- (void) _onItemDragOutside:(UIButton*)sender
+- (void) _onItemDragOutside:(SNTabBarItem*)item
 {
-    SNTabBarItem *item = _items[sender.tag];
-    if (!item.isAllowSelected && item.titleLabel) {
-        item.titleLabel.highlighted = NO;
+    if (!item.isAllowSelected) {
+        item.highlighted = NO;
     }
 }
 
-- (void) _onItemTouchDown:(UIButton*)sender
+- (void) _onItemTouchDown:(SNTabBarItem*)item
 {
-    SNTabBarItem *item = _items[sender.tag];
-    if (!item.isAllowSelected && item.titleLabel) {
-        item.titleLabel.highlighted = YES;
+    if (!item.isAllowSelected) {
+        item.highlighted = YES;
     }
 }
 
@@ -223,7 +218,8 @@ static NSString *const kSNBlackClr = @"404040";
         if (from < toIndex) {
             CGFloat distance = toItem.sn_width * percent;
             
-            _itemLineView.sn_left = fromItem.sn_left + distance;
+            self.itemLineView.sn_left = fromItem.sn_left + distance;
+            [self xxxxWithDirection:isToLeft center:_itemLineView.center.x];
         }
     }
     else
@@ -231,9 +227,44 @@ static NSString *const kSNBlackClr = @"404040";
         if (from > toIndex) {
             CGFloat distance = toItem.sn_width * percent;
             
-            _itemLineView.sn_left = fromItem.sn_left - distance;
+            self.itemLineView.sn_left = fromItem.sn_left - distance;
+            [self xxxxWithDirection:isToLeft center:_itemLineView.center.x];
         }
     }
+}
+
+- (void) xxxxWithDirection:(BOOL)isToLeft center:(CGFloat)center
+{
+    CGFloat offsetX = center - self.scrollView.sn_widthHalf;
+    
+    if (isToLeft) {
+        if (offsetX - self.scrollView.contentOffset.x > 50) {
+            CGFloat maxOffset = self.scrollView.contentSize.width - self.scrollView.sn_width;
+            CGFloat offsetX = MIN(maxOffset, self.scrollView.contentOffset.x + 50);
+            [UIView animateWithDuration:0.5 animations:^{
+                self.scrollView.contentOffset = CGPointMake(offsetX, 0);
+            }];
+        }
+    }
+    else {
+        if (offsetX - self.scrollView.contentOffset.x < -50) {
+            CGFloat offsetX = MAX(self.scrollView.contentOffset.x - 50, 0);
+            [UIView animateWithDuration:0.5 animations:^{
+                self.scrollView.contentOffset = CGPointMake(offsetX, 0);
+            }];
+        }
+    }
+}
+
+- (void) setScrollViewContentPointWithCenter:(CGFloat)center animated:(BOOL)animated
+{
+    CGFloat offsetX = center - self.scrollView.sn_widthHalf;
+    CGFloat targetX = 0;
+    if (offsetX > 0) {
+        CGFloat maxOffset = self.scrollView.contentSize.width - self.scrollView.sn_width;
+        targetX = MIN(offsetX, maxOffset);
+    }
+    [self.scrollView setContentOffset:CGPointMake(targetX, 0) animated:animated];
 }
 
 - (void) selectItemWithIndex:(NSInteger)index animated:(BOOL)animated force:(BOOL)force;
@@ -252,26 +283,27 @@ static NSString *const kSNBlackClr = @"404040";
     }
     [self selectedWill:toItem];
     
-    CGRect lineFrame = _itemLineView.frame;
-    CGRect itemFrame = toItem.frame;
-    CGRect toFrame = CGRectMake(itemFrame.origin.x, lineFrame.origin.y, itemFrame.size.width, lineFrame.size.height);
-    if (animated) {
-        [UIView animateWithDuration:0.3f animations:^{
-            _itemLineView.frame = toFrame;
-        } completion:^(BOOL finished) {
-            if (fromItem != toItem) {
-                [self unselectedDid:fromItem];
-            }
-            [self selectedDid:toItem];
-        }];
-    }
-    else{
-        _itemLineView.frame = toFrame;
+    void (^completion)(BOOL finished)  = ^(BOOL finished)
+    {
         if (fromItem != toItem) {
             [self unselectedDid:fromItem];
         }
         [self selectedDid:toItem];
+    };
+    
+    CGRect toFrame = CGRectMake(toItem.sn_left, _itemLineView.sn_top, toItem.sn_width, _itemLineView.sn_height);
+    if (animated) {
+        [UIView animateWithDuration:0.3f animations:^{
+            _itemLineView.frame = toFrame;
+        } completion:completion];
     }
+    else{
+        _itemLineView.frame = toFrame;
+        completion(YES);
+    }
+    
+    // set content offset
+    [self setScrollViewContentPointWithCenter:toItem.center.x animated:animated];
 }
 
 - (void) unselectedWill:(SNTabBarItem*)item
@@ -343,36 +375,36 @@ static NSString *const kSNBlackClr = @"404040";
     
     float itemWidth = 0;
     if (fixedCount > 0) {
-        itemWidth = (_items.count - fixedCount) > 0 ? (self.frame.size.width - fixedWidth) / (_items.count - fixedCount) : 0;
+        itemWidth = (_items.count - fixedCount) > 0 ? (self. sn_width - fixedWidth) / (_items.count - fixedCount) : 0;
     }
     else{
-        itemWidth = self.frame.size.width / _items.count;
+        itemWidth = self.sn_width / _items.count;
+    }
+    if (itemWidth < self.minItemWidth) {
+        itemWidth = self.minItemWidth;
     }
     
-    float posx = 0;
-    for (int index = 0; index < _items.count; ++index) {
-        SNTabBarItem *item = _items[index];
-        UIButton *button = _buttons[index];
+    SNTabBarItem *lastItem = nil;
+    for (SNTabBarItem *item in _items) {
         if (item.fixedWidth > 0) {
-            item.frame = CGRectMake(posx, 0, item.fixedWidth, _tabBarHeight);
-            posx += item.fixedWidth;
+            item.frame = CGRectMake(lastItem ? lastItem.sn_right : 0, 0, item.fixedWidth, _tabBarHeight);
         }
         else{
-            item.frame = CGRectMake(posx, 0, itemWidth, _tabBarHeight);
-            posx += itemWidth;
+            item.frame = CGRectMake(lastItem ? lastItem.sn_right : 0, 0, itemWidth, _tabBarHeight);
         }
-        button.frame = item.frame;
-        
-        button.tag = index;
-        item.tag = index;
+        lastItem = item;
     }
-    
+    self.scrollView.contentSize = CGSizeMake(lastItem.sn_right, self.scrollView.contentSize.height);
     [self selectItemWithIndex:_selectedIndex animated:NO force:YES];
     
     // item line
     _itemLineView.hidden = (allowSelectedCount <= 1);
     
     _layouted = YES;
+}
+
+- (void) dealloc {
+    
 }
 
 @end
@@ -388,14 +420,11 @@ static NSString *const kSNBlackClr = @"404040";
 - (id) initWithTitle:(NSString *)title Target:(id)target action:(SEL)action
 {
     if (self = [super init]) {
-        _titleLabel = [[UILabel alloc] init];
-        _titleLabel.text = title;
-        _titleLabel.font = [UIFont systemFontOfSize:17];
-        _titleLabel.textAlignment = NSTextAlignmentCenter;
-        _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.textColor = kSNBlackClr.sn_color;
-        _titleLabel.highlightedTextColor = kSNCommonClr.sn_color;
-        [self addSubview:_titleLabel];
+        self.titleLabel.font = [UIFont systemFontOfSize:17];
+        [self setTitle:title forState:UIControlStateNormal];
+        [self setTitleColor:kSNBlackClr.sn_color forState:UIControlStateNormal];
+        [self setTitleColor:kSNCommonClr.sn_color forState:UIControlStateHighlighted];
+        [self setTitleColor:kSNCommonClr.sn_color forState:UIControlStateSelected];
         
         [self _initWithTarget:target acion:action];
     }
@@ -406,14 +435,17 @@ static NSString *const kSNBlackClr = @"404040";
 - (id) initWithImage:(UIImage *)image Target:(id)target action:(SEL)action
 {
     if (self = [super init]) {
-        _imageView = [[UIImageView alloc] initWithImage:image];
-        
-        [self addSubview:_imageView];
+        [self setImage:image forState:UIControlStateNormal];
         
         [self _initWithTarget:target acion:action];
     }
     
     return self;
+}
+
+- (void) setTitleColor:(UIColor *)color forState:(UIControlState)state
+{
+    [super setTitleColor:color forState:state];
 }
 
 - (void)_initWithTarget:(id)target acion:(SEL)action
@@ -427,17 +459,6 @@ static NSString *const kSNBlackClr = @"404040";
 }
 
 #pragma mark -
-
-- (void) setFrame:(CGRect)frame
-{
-    [super setFrame:frame];
-    if (_titleLabel) {
-        _titleLabel.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
-    }
-    if (_imageView) {
-        _imageView.center = CGPointMake(frame.size.width*0.5, frame.size.height*0.5);
-    }
-}
 
 - (void) clicked
 {
@@ -453,9 +474,7 @@ static NSString *const kSNBlackClr = @"404040";
 
 - (void) selectedWill
 {
-    if (_titleLabel) {
-        _titleLabel.highlighted = YES;
-    }
+    self.selected = YES;
     
     _status = SNTabBarItemStatusSelected;
     
@@ -474,9 +493,7 @@ static NSString *const kSNBlackClr = @"404040";
 
 - (void) unselectedWill
 {
-    if (_titleLabel) {
-        _titleLabel.highlighted = NO;
-    }
+    self.selected = NO;
     
     _status = SNTabBarItemStatusNormal;
     

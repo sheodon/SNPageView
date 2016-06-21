@@ -32,6 +32,7 @@
 
 - (void) _initTestLoopPageView
 {
+    self.autoresizesSubviews = YES;
     self.backgroundColor = [UIColor lightGrayColor];
     self.tableItems = [NSMutableArray array];
     
@@ -111,6 +112,7 @@
 {
     UIView *view = [UIView.alloc initWithFrame:pageView.bounds];
     
+    view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     UILabel *lbl = [UILabel.alloc initWithFrame:CGRectMake(0, 0, view.sn_width, view.sn_height)];
     lbl.text = [NSString stringWithFormat:@"page view : %ld", (long)index];
     lbl.textAlignment = NSTextAlignmentCenter;
