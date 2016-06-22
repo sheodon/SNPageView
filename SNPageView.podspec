@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "SNPageView"
-  s.version      = "1.0.0"
+  s.version      = "1.1.0"
   s.summary      = "分页滚动控件，可实现轮播（support page view and tab page view）"
 
   s.description  = <<-DESC
