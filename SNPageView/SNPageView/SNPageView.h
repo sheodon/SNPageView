@@ -38,6 +38,8 @@
 @property (nonatomic, assign)   BOOL          repeatScroll;
 /// 当前页数 (default:0）
 @property (nonatomic, assign)   NSInteger     currentIndex;
+/// 屏蔽分发事件（default:0）
+@property (nonatomic, assign)   BOOL          blockDispatchEvent;
 
 @property (nonatomic, readonly) UIScrollView  *scrollView;
 

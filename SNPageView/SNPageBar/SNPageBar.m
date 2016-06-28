@@ -74,7 +74,9 @@
 
 - (void) selectItemWithIndex:(NSInteger)index animated:(BOOL)animated force:(BOOL)force
 {
+    self.pageView.blockDispatchEvent = YES;
     [self.pageView scrollToPageAtIndex:index animated:animated];
+    self.pageView.blockDispatchEvent = NO;
     
     [super selectItemWithIndex:index animated:animated force:force];
     
@@ -106,7 +108,7 @@
     SNPageBarItem *itemBar = (SNPageBarItem*)self.items[item.index];
     [itemBar selectedWill];
     
-//    NSLog(@"itemWillAppear %@", item);
+    //    NSLog(@"itemWillAppear %@", item);
 }
 
 - (void) sn_pageView:(SNPageView *)pageView itemWillDisappear:(SNPageViewItem *)item
@@ -114,7 +116,7 @@
     SNPageBarItem *itemBar = (SNPageBarItem*)self.items[item.index];
     [itemBar unselectedWill];
     
-//    NSLog(@"itemWillDisappear %@", item);
+    //    NSLog(@"itemWillDisappear %@", item);
 }
 
 - (void) sn_pageView:(SNPageView *)pageView itemWillAppear:(SNPageViewItem *)appearItem itemWillDisappear:(SNPageViewItem *)disappearItem
@@ -133,7 +135,7 @@
     
     [super selectItemWithIndex:item.index animated:YES force:NO];
     
-//    NSLog(@"itemDidAppear %@", item);
+    //    NSLog(@"itemDidAppear %@", item);
 }
 
 - (void) sn_pageView:(SNPageView *)pageView itemDidDisappear:(SNPageViewItem *)item
@@ -141,7 +143,7 @@
     SNPageBarItem *itemBar = (SNPageBarItem*)self.items[item.index];
     [itemBar unselectedDid];
     
-//    NSLog(@"itemDidDisappear %@", item);
+    //    NSLog(@"itemDidDisappear %@", item);
 }
 
 @end

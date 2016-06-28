@@ -28,8 +28,8 @@
 /// 上次滑动的点
 @property (nonatomic, assign) CGPoint       lastPoit;
 
-@property (nonatomic, assign) BOOL                      blockEvent;
-@property (nonatomic, assign) BOOL                      blockHandleDidScroll;
+@property (nonatomic, assign) BOOL          blockEvent;
+@property (nonatomic, assign) BOOL          blockHandleDidScroll;
 
 @property (nonatomic, strong) SNPageViewItemEx *itemWillAppear;
 @property (nonatomic, strong) SNPageViewItemEx *itemWillDisappear;
@@ -60,6 +60,7 @@
 {
     self.pageViews = [NSMutableDictionary dictionary];
     self.unusedViews = [NSMutableSet set];
+    self.blockDispatchEvent = NO;
     
     _scrollView = [UIScrollView.alloc initWithFrame:self.bounds];
     _scrollView.bounces = NO;
@@ -148,7 +149,7 @@
     [self dispatchWillEventWithIndex:pageIndex isAppear:YES];
     _currentIndex = pageIndex;
     [self dispatchDidEventWithAppearIndex:pageIndex disappearIndex:tempCurrIndex];
-
+    
     [self cleanupWillScrollStatus];
     self.blockEvent = YES;
 }
@@ -305,7 +306,7 @@
     
     float offset = scrollView.contentOffset.x / scrollView.frame.size.width;
     CGFloat percent = offset - floorf(offset);
-   
+    
     NSInteger appearIndex = (direction == SNPageViewScrollDirectionLeft) ? ceilf(offset) : floorf(offset);
     appearIndex = [self negativeIndex:appearIndex];
     NSInteger disppearIndex = appearIndex + ((direction == SNPageViewScrollDirectionLeft) ? - 1 : + 1);
@@ -336,7 +337,7 @@
 
 - (void) dispatchDidEvents
 {
-    if (self.blockEvent) {
+    if (self.blockEvent || self.blockDispatchEvent) {
         return;
     }
     
@@ -361,7 +362,7 @@
 
 - (void) dispatchDidEventWithAppearIndex:(NSInteger)appearIndex disappearIndex:(NSInteger)disappearIndex
 {
-    if (self.blockEvent) {
+    if (self.blockEvent || self.blockDispatchEvent) {
         return;
     }
     
@@ -395,7 +396,7 @@
 
 - (void) dispatchDidEventWithIndex:(NSInteger)index isAppear:(BOOL)isAppear
 {
-    if (self.blockEvent) {
+    if (self.blockEvent || self.blockDispatchEvent) {
         return;
     }
     
@@ -421,7 +422,7 @@
 
 - (void) dispatchWillEventsWithDirection:(SNPageViewScrollDirection)direction percent:(CGFloat)percent
 {
-    if (self.blockEvent) {
+    if (self.blockEvent || self.blockDispatchEvent) {
         return;
     }
     
@@ -431,7 +432,7 @@
     if (direction == SNPageViewScrollDirectionRight) {
         percent = 1 - percent;
     }
-   
+    
     [self setItem:self.itemWillAppear direction:direction percent:percent];
     [self setItem:self.itemWillDisappear direction:direction percent:percent];
     
@@ -450,7 +451,7 @@
 
 - (void) dispatchWillEventWithIndex:(NSInteger)index isAppear:(BOOL)isAppear
 {
-    if (self.blockEvent) {
+    if (self.blockEvent || self.blockDispatchEvent) {
         return;
     }
     
@@ -546,7 +547,7 @@
     if (viewIndex < 0) {
         return nil;
     }
-   
+    
     if (ABS(_scrollView.contentOffset.y) > 0.00001) {
         _scrollView.contentOffset = CGPointMake(_scrollView.contentOffset.x, 0);
     }
