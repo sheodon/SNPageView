@@ -15,8 +15,8 @@
 #define kTipImageViewTag 2010
 #define kTabViewLineTag 2030
 
-static NSString *const kSNCommonClr = @"45c01a";
-static NSString *const kSNBlackClr = @"404040";
+static NSString * SNTabBarSelectedClr = @"45c01a";
+static NSString * SNTabBarNormalClr = @"404040";
 
 
 #pragma mark SNTabBar interface
@@ -42,6 +42,20 @@ static NSString *const kSNBlackClr = @"404040";
 @end
 
 @implementation SNTabBar
+
++ (void) setSelectedClr:(NSString*)clr
+{
+    if (clr.length > 0) {
+        SNTabBarSelectedClr = clr;
+    }
+}
+
++ (void) setNormalClr:(NSString*)clr
+{
+    if (clr.length > 0) {
+        SNTabBarNormalClr = clr;
+    }
+}
 
 - (id) initWithFrame:(CGRect)frame
 {
@@ -74,13 +88,13 @@ static NSString *const kSNBlackClr = @"404040";
     
     // 标签底线
     _itemLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tipLineWidth, 0.0f, _tipLineWidth)];
-    _itemLineView.backgroundColor = kSNCommonClr.sn_color;
+    _itemLineView.backgroundColor = SNTabBarSelectedClr.sn_color;
     _itemLineView.layer.zPosition = MAXFLOAT;
     [self.scrollView addSubview:_itemLineView];
     
     // tab底线
     UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tabLineWidth, size.width, _tabLineWidth)];
-    lineView.backgroundColor = kSNCommonClr.sn_color;
+    lineView.backgroundColor = SNTabBarSelectedClr.sn_color;
     lineView.layer.zPosition = MAXFLOAT;
     [self addSubview:lineView];
 }
@@ -422,9 +436,9 @@ static NSString *const kSNBlackClr = @"404040";
     if (self = [super init]) {
         self.titleLabel.font = [UIFont systemFontOfSize:17];
         [self setTitle:title forState:UIControlStateNormal];
-        [self setTitleColor:kSNBlackClr.sn_color forState:UIControlStateNormal];
-        [self setTitleColor:kSNCommonClr.sn_color forState:UIControlStateHighlighted];
-        [self setTitleColor:kSNCommonClr.sn_color forState:UIControlStateSelected];
+        [self setTitleColor:SNTabBarNormalClr.sn_color forState:UIControlStateNormal];
+        [self setTitleColor:SNTabBarSelectedClr.sn_color forState:UIControlStateHighlighted];
+        [self setTitleColor:SNTabBarSelectedClr.sn_color forState:UIControlStateSelected];
         
         [self _initWithTarget:target acion:action];
     }

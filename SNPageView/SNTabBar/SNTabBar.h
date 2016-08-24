@@ -33,6 +33,9 @@ typedef enum : NSUInteger {
 
 @interface SNTabBar : UIView
 
++ (void) setSelectedClr:(NSString*)clr;
++ (void) setNormalClr:(NSString*)clr;
+
 @property (nonatomic, readonly) NSMutableArray<SNTabBarItem*>  *items;
 /// tabbar 的高度
 @property (nonatomic, assign) CGFloat tabBarHeight;
