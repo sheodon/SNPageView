@@ -11,30 +11,13 @@
 
 @implementation SNPageBarItem
 
-- (void) removeFromSuperview
-{
-    [super removeFromSuperview];
-    if (_contentView) {
-        [_contentView removeFromSuperview];
-    }
-}
-
 - (void) setContentView:(SNPageBarContent *)contentView
 {
     if (_contentView == contentView) {
         return;
     }
-    if (_contentView) {
-        [_contentView removeFromSuperview];
-    }
     _contentView = contentView;
     _contentView.barItem = self;
-}
-
-- (void) setTabBar:(SNTabBar *)tabBar
-{
-    [super setTabBar:tabBar];
-    
 }
 
 - (void) selectedWill
