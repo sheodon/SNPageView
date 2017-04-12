@@ -435,6 +435,8 @@ static NSString * SNTabBarNormalClr = @"404040";
 {
     if (self = [super init]) {
         self.titleLabel.font = [UIFont systemFontOfSize:17];
+        self.titleLabel.numberOfLines = 0;
+        self.titleLabel.textAlignment = NSTextAlignmentCenter;
         [self setTitle:title forState:UIControlStateNormal];
         [self setTitleColor:SNTabBarNormalClr.sn_color forState:UIControlStateNormal];
         [self setTitleColor:SNTabBarSelectedClr.sn_color forState:UIControlStateHighlighted];
