@@ -19,6 +19,27 @@
 
 @end
 
+#pragma mark SNScrollView
+@interface SNPageScrollView : UIScrollView
+
+
+@end
+
+@implementation SNPageScrollView
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if (self.contentOffset.x <= 0) {
+        if ([otherGestureRecognizer isKindOfClass:UIScreenEdgePanGestureRecognizer.class] ||
+            [otherGestureRecognizer.delegate isKindOfClass:NSClassFromString(@"_FDFullscreenPopGestureRecognizerDelegate")]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+@end
+
+#pragma mark SNPageView
 @interface SNPageView ()<UIScrollViewDelegate>
 
 @property (nonatomic, strong) NSMutableDictionary   *pageViews;
@@ -62,7 +83,7 @@
     self.unusedViews = [NSMutableSet set];
     self.blockDispatchEvent = NO;
     
-    _scrollView = [UIScrollView.alloc initWithFrame:self.bounds];
+    _scrollView = [SNPageScrollView.alloc initWithFrame:self.bounds];
     _scrollView.bounces = NO;
     _scrollView.pagingEnabled = YES;
     _scrollView.showsHorizontalScrollIndicator = NO;
