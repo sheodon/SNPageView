@@ -74,8 +74,10 @@
 
 - (void) selectItemWithIndex:(NSInteger)index animated:(BOOL)animated force:(BOOL)force
 {
+    BOOL pageAnimated = (ABS(self.selectedIndex - index) == 1) && animated;
+    
     self.pageView.blockDispatchEvent = YES;
-    [self.pageView scrollToPageAtIndex:index animated:animated];
+    [self.pageView scrollToPageAtIndex:index animated:pageAnimated];
     self.pageView.blockDispatchEvent = NO;
     
     [super selectItemWithIndex:index animated:animated force:force];
