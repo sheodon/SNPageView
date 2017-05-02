@@ -172,7 +172,9 @@ static NSString * SNTabBarNormalClr = @"404040";
     [item removeFromSuperview];
     
     [_items removeObjectAtIndex:index];
-    
+    if (index < _selectedIndex) {
+        _selectedIndex = index;
+    }
     _selectedIndex = MIN(_selectedIndex, _items.count - 1);
     
     if (_layouted) {
