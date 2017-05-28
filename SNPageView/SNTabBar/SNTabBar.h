@@ -35,6 +35,7 @@ typedef enum : NSUInteger {
 
 + (void) setSelectedClr:(NSString*)clr;
 + (void) setNormalClr:(NSString*)clr;
++ (void) setBackgroudColor:(NSString*)clr;
 
 @property (nonatomic, readonly) NSMutableArray<SNTabBarItem*>  *items;
 /// tabbar 的高度

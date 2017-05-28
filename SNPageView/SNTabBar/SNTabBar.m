@@ -17,6 +17,7 @@
 
 static NSString * SNTabBarSelectedClr = @"45c01a";
 static NSString * SNTabBarNormalClr = @"404040";
+static NSString * SNTabBarBgClr = @"ffffff";
 
 
 #pragma mark SNTabBar interface
@@ -57,6 +58,13 @@ static NSString * SNTabBarNormalClr = @"404040";
     }
 }
 
++ (void) setBackgroudColor:(NSString*)clr
+{
+    if (clr.length > 0) {
+        SNTabBarBgClr = clr;
+    }
+}
+
 - (id) initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
@@ -80,7 +88,7 @@ static NSString * SNTabBarNormalClr = @"404040";
     
     CGSize size = self.frame.size;
     
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = SNTabBarBgClr.sn_color;
     
     self.tabLineWidth = 0.5;
     self.tipLineWidth = 4.0;
@@ -172,11 +180,14 @@ static NSString * SNTabBarNormalClr = @"404040";
     [item removeFromSuperview];
     
     [_items removeObjectAtIndex:index];
-    if (index < _selectedIndex) {
-        _selectedIndex = index;
-    }
-    _selectedIndex = MIN(_selectedIndex, _items.count - 1);
     
+    if (index < _selectedIndex) {
+        _selectedIndex -= 1;
+    }
+    _selectedIndex = fminf(_selectedIndex, _items.count - 1);
+    if (_selectedIndex < 0) {
+        _selectedIndex = 0;
+    }
     if (_layouted) {
         [self relayout];
     }
