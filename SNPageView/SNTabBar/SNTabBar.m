@@ -484,7 +484,7 @@ static NSString * SNTabBarBgClr = @"ffffff";
     _isAllowSelected = YES;
     _status = SNTabBarItemStatusNormal;
     
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = SNTabBarBgClr.sn_color;
 }
 
 #pragma mark -
