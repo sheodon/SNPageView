@@ -196,14 +196,15 @@ static NSString * SNTabBarBgClr = @"ffffff";
 #pragma mark
 - (void) _onItemTouchUpInside:(SNTabBarItem*)item
 {
+    [item clicked];
+    if (_delegate && [_delegate respondsToSelector:@selector(SNTabBar:didClickItem:)]) {
+        [_delegate SNTabBar:self didClickItem:item];
+    }
+    
     if (item.isAllowSelected) {
         [self selectItemWithIndex:[self indexOfItem:item] animated:YES force:NO];
     }
     else{
-        [item clicked];
-        if (_delegate && [_delegate respondsToSelector:@selector(SNTabBar:didClickItem:)]) {
-            [_delegate SNTabBar:self didClickItem:item];
-        }
         item.highlighted = NO;
     }
 }
