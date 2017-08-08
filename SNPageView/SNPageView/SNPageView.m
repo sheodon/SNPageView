@@ -154,9 +154,20 @@
         return;
     }
     
-    [self visibleViewAtIndex:pageIndex-1];
-    [self visibleViewAtIndex:pageIndex];
-    [self visibleViewAtIndex:pageIndex+1];
+    SNPageViewScrollDirection dir = [self directionByAppearIndex:pageIndex disappearIndex:_currentIndex];
+    if (dir == SNPageViewScrollDirectionLeft) {
+        [self hiddenViewAtIndex:_currentIndex+1];
+        [self visibleViewAtIndex:pageIndex];
+        [self visibleViewAtIndex:pageIndex+1];
+    }
+    else if (dir == SNPageViewScrollDirectionRight) {
+        [self hiddenViewAtIndex:_currentIndex-1];
+        [self visibleViewAtIndex:pageIndex-1];
+        [self visibleViewAtIndex:pageIndex];
+    }
+    else {
+        [self visibleViewAtIndex:pageIndex];
+    }
     
     self.blockEvent = YES;
     CGPoint point = [self pointForIndex:[self positiveIndex:pageIndex]];
