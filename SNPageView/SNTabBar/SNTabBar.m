@@ -84,6 +84,9 @@ static NSString * SNTabBarBgClr = @"ffffff";
     _scrollView.showsVerticalScrollIndicator   = NO;
     _scrollView.backgroundColor = [UIColor clearColor];
     _scrollView.scrollsToTop = NO;
+    if (@available(iOS 11.0, *)) {
+        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
     [self addSubview:_scrollView];
     
     CGSize size = self.frame.size;
