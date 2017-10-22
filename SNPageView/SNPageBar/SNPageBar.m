@@ -36,9 +36,11 @@
 
 - (void) relayout
 {
+    BOOL isLoaded = self.pageView.loaded;
     [super relayout];
-    
-    [self.pageView reloadData];
+    if (isLoaded || !self.pageView.loaded) {
+        [self.pageView reloadData];
+    }
 }
 
 - (void) addItem:(SNPageBarItem*)item
@@ -75,18 +77,17 @@
 - (void) selectItemWithIndex:(NSInteger)index animated:(BOOL)animated force:(BOOL)force
 {
     BOOL pageAnimated = (ABS(self.selectedIndex - index) == 1) && animated;
-    
+   
+    SNPageBarItem *item = (SNPageBarItem*)self.items[index];
     self.pageView.blockDispatchEvent = YES;
+    if (item.contentView) {
+        self.sn_height = item.contentView.sn_height+self.tabBarHeight;
+    }
     [self.pageView scrollToPageAtIndex:index animated:pageAnimated];
     self.pageView.blockDispatchEvent = NO;
     
     [super selectItemWithIndex:index animated:animated force:force];
-    
-    SNPageBarItem *item = (SNPageBarItem*)self.items[index];
-    if (item.contentView) {
-        self.sn_height = item.contentView.sn_height+self.tabBarHeight;
-    }
-    else{
+    if (!item.contentView) {
         self.sn_height = self.tabBarHeight;
     }
 }

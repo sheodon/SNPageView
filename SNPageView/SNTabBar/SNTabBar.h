@@ -37,6 +37,7 @@ typedef enum : NSUInteger {
 + (void) setNormalClr:(NSString*)clr;
 + (void) setBackgroudColor:(NSString*)clr;
 
+@property (nonatomic, readonly) BOOL layouted;
 @property (nonatomic, readonly) NSMutableArray<SNTabBarItem*>  *items;
 /// tabbar 的高度
 @property (nonatomic, assign) CGFloat tabBarHeight;

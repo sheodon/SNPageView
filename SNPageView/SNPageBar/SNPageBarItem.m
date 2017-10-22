@@ -38,7 +38,7 @@
 - (void) selectedDid
 {
     [super selectedDid];
-    if (_contentView) {
+    if (_contentView && !_contentView.viewVisible) {
         _contentView.viewVisible = YES;
         [_contentView viewDidAppear];
     }
@@ -60,7 +60,7 @@
 {
     [super unselectedDid];
     
-    if (_contentView) {
+    if (_contentView && _contentView.viewVisible) {
         _contentView.viewVisible = NO;
         [_contentView viewDidDisappear];
     }

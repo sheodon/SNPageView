@@ -34,6 +34,8 @@
 
 #pragma mark  SNPageView
 @interface SNPageView : UIView
+
+@property (nonatomic, readonly) BOOL          loaded;
 /// 是否循环滚动(default:NO)
 @property (nonatomic, assign)   BOOL          repeatScroll;
 /// 当前页数 (default:0）
