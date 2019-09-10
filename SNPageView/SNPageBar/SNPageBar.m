@@ -28,6 +28,7 @@
 
 - (void) _initPageBar
 {
+    _isAutoHeight = YES;
     _pageView = [SNPageView.alloc initWithFrame:CGRectMake(0, 0, self.sn_width, 0)];
     _pageView.sn_position_0_0 = CGPointMake(0, self.tabBarHeight);
     _pageView.delegate = self;
@@ -56,13 +57,16 @@
 - (void) setFrame:(CGRect)frame
 {
     [super setFrame:frame];
-    if (self.pageView) {
+    if (self.pageView && self.isAutoHeight) {
         self.pageView.frame = CGRectMake(0, self.tabBarHeight, self.sn_width, self.sn_height - self.tabBarHeight);
     }
 }
 
 - (void) updateContentFrame
 {
+    if (!self.isAutoHeight) {
+        return;
+    }
     SNPageBarItem *item = (SNPageBarItem*)self.items[self.selectedIndex];
     if (item.contentView) {
         self.sn_height = item.contentView.sn_height + self.tabBarHeight;
@@ -80,14 +84,14 @@
    
     SNPageBarItem *item = (SNPageBarItem*)self.items[index];
     self.pageView.blockDispatchEvent = YES;
-    if (item.contentView) {
+    if (item.contentView && self.isAutoHeight) {
         self.sn_height = item.contentView.sn_height+self.tabBarHeight;
     }
     [self.pageView scrollToPageAtIndex:index animated:pageAnimated];
     self.pageView.blockDispatchEvent = NO;
     
     [super selectItemWithIndex:index animated:animated force:force];
-    if (!item.contentView) {
+    if (!item.contentView && self.isAutoHeight) {
         self.sn_height = self.tabBarHeight;
     }
 }

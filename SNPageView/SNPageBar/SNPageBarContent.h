@@ -11,10 +11,12 @@
 @class SNPageBarItem;
 @interface SNPageBarContent : UIView
 
+@property (nonatomic) BOOL isViewInitialized;
 @property (nonatomic, getter=isViewLoaded) BOOL     viewLoaded;
 @property (nonatomic, getter=isViewVisible) BOOL    viewVisible;
 @property (nonatomic, weak) SNPageBarItem           *barItem;
 
+- (void) viewInitialized;
 - (void) viewLoaded;
 
 - (void) viewWillDisappear;

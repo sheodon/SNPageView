@@ -39,12 +39,13 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) BOOL layouted;
 @property (nonatomic, readonly) NSMutableArray<SNTabBarItem*>  *items;
+@property (nonatomic, copy) void(^onContentWidthChanged)(CGFloat contentWidth, SNTabBar *tabBar);
 /// tabbar 的高度
 @property (nonatomic, assign) CGFloat tabBarHeight;
 /// default:0.5
-@property (nonatomic, assign) CGFloat tabLineWidth;
+@property (nonatomic, assign) CGFloat tabLineHeight;
 /// default:4.0
-@property (nonatomic, assign) CGFloat tipLineWidth;
+@property (nonatomic, assign) CGFloat tipLineHeight;
 /// 当前选中的item
 @property (nonatomic, assign) NSInteger selectedIndex;
 
@@ -52,6 +53,11 @@ typedef enum : NSUInteger {
 
 /// 最小Item的宽度，当平均宽度小余minItemWidth时采用minItemWidth；default:74
 @property (nonatomic, assign) CGFloat   minItemWidth;
+@property (nonatomic, assign) CGFloat   maxItemWidth;
+/// 固定TipLine的宽度
+@property (nonatomic, assign) CGFloat   fixedTipLineWith;
+
+- (void) setLineViewColor:(UIColor*)color;
 
 ///
 - (NSUInteger) indexOfItem:(SNTabBarItem*)item;

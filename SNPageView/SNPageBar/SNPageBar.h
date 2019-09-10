@@ -11,6 +11,7 @@
 
 @interface SNPageBar : SNTabBar
 
+@property (nonatomic, assign)  BOOL isAutoHeight; // 禁止自动调整高度
 @property (nonatomic, readonly) SNPageView    *pageView;
 
 - (void) addItem:(SNPageBarItem*)item;

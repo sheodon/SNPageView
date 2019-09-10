@@ -24,6 +24,19 @@
     }
 }
 
+- (void) setBarItem:(SNPageBarItem *)barItem {
+    _barItem = barItem;
+    if (!_isViewInitialized) {
+        _isViewInitialized = YES;
+        [self viewInitialized];
+    }
+}
+
+- (void) viewInitialized
+{
+    
+}
+
 - (void) viewLoaded {
     self.viewLoaded = YES;
 }

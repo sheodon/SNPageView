@@ -36,7 +36,8 @@ static NSString * SNTabBarBgClr = @"ffffff";
 
 @interface SNTabBar ()
 
-@property (nonatomic, strong) UIView         *itemLineView;
+@property (nonatomic, strong) UIView        *tabLineView;
+@property (nonatomic, strong) UIView        *itemLineView;
 
 @property (nonatomic, strong) UIScrollView   *scrollView;
 
@@ -93,29 +94,59 @@ static NSString * SNTabBarBgClr = @"ffffff";
     
     self.backgroundColor = SNTabBarBgClr.sn_color;
     
-    self.tabLineWidth = 0.5;
-    self.tipLineWidth = 4.0;
+    self.tabLineHeight = 0.5;
+    self.tipLineHeight = 4.0;
     self.minItemWidth = 74.f;
     
     // 标签底线
-    _itemLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tipLineWidth, 0.0f, _tipLineWidth)];
+    _itemLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tipLineHeight, 0.0f, _tipLineHeight)];
     _itemLineView.backgroundColor = SNTabBarSelectedClr.sn_color;
     _itemLineView.layer.zPosition = MAXFLOAT;
     [self.scrollView addSubview:_itemLineView];
     
     // tab底线
-    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tabLineWidth, size.width, _tabLineWidth)];
-    lineView.backgroundColor = SNTabBarSelectedClr.sn_color;
-    lineView.layer.zPosition = MAXFLOAT;
-    [self addSubview:lineView];
+    _tabLineView = [[UIView alloc] initWithFrame:CGRectMake(0.0f, _tabBarHeight-_tabLineHeight, size.width, _tabLineHeight)];
+    _tabLineView.backgroundColor = SNTabBarSelectedClr.sn_color;
+    _tabLineView.layer.zPosition = MAXFLOAT;
+    [self addSubview:_tabLineView];
+}
+
+- (void) setTabLineHeight:(CGFloat)tabLineHeight {
+    _tabLineHeight = tabLineHeight;
+    
+    if (_tabLineView) {
+        CGFloat bottom = _tabLineView.sn_bottom;
+        _tabLineView.sn_height = tabLineHeight;
+        _tabLineView.sn_bottom = bottom;
+    }
+}
+
+- (void) setTipLineHeight:(CGFloat)tipLineHeight {
+    _tipLineHeight = tipLineHeight;
+    if (_itemLineView) {
+        CGFloat bottom = _itemLineView.sn_bottom;
+        _itemLineView.sn_height = tipLineHeight;
+        _itemLineView.sn_bottom = bottom;
+    }
+}
+
+- (void) setLineViewColor:(UIColor*)color
+{
+    _itemLineView.backgroundColor = color;
+    _tabLineView.backgroundColor = color;
+}
+
+- (void) setFixedTipLineWith:(CGFloat)fixedTipLineWith {
+    _fixedTipLineWith = fixedTipLineWith;
+    [self tryRelayout];
 }
 
 - (void) setFrame:(CGRect)frame
 {
-    BOOL isChanged = CGSizeEqualToSize(self.sn_size, frame.size);
+    BOOL isChanged = !CGSizeEqualToSize(self.sn_size, frame.size);
     [super setFrame:frame];
     self.scrollView.sn_size = frame.size;
-    if (_layouted && !isChanged) {
+    if (_layouted && isChanged) {
         [self relayout];
     }
 }
@@ -151,9 +182,7 @@ static NSString * SNTabBarBgClr = @"ffffff";
     [item addTarget:self action:@selector(_onItemTouchUpInside:) forControlEvents:UIControlEventTouchUpInside];
     [item addTarget:self action:@selector(_onItemTouchUpOutside:) forControlEvents:UIControlEventTouchUpOutside];
     
-    if (_layouted) {
-        [self relayout];
-    }
+    [self tryRelayout];
 }
 
 - (void) layoutSubviews
@@ -191,9 +220,7 @@ static NSString * SNTabBarBgClr = @"ffffff";
     if (_selectedIndex < 0) {
         _selectedIndex = 0;
     }
-    if (_layouted) {
-        [self relayout];
-    }
+    [self tryRelayout];
 }
 
 #pragma mark
@@ -244,10 +271,11 @@ static NSString * SNTabBarBgClr = @"ffffff";
 {
     SNTabBarItem *fromItem = _items[from];
     SNTabBarItem *toItem = _items[toIndex];
+    CGFloat offWidth = (fromItem.sn_width - self.itemLineView.sn_width) * 0.5;
     if (isToLeft)
     {
         if (from < toIndex) {
-            CGFloat distance = toItem.sn_width * percent;
+            CGFloat distance = toItem.sn_width * percent + offWidth;
             
             self.itemLineView.sn_left = fromItem.sn_left + distance;
             [self xxxxWithDirection:isToLeft center:_itemLineView.center.x];
@@ -256,7 +284,7 @@ static NSString * SNTabBarBgClr = @"ffffff";
     else
     {
         if (from > toIndex) {
-            CGFloat distance = toItem.sn_width * percent;
+            CGFloat distance = toItem.sn_width * percent - offWidth;
             
             self.itemLineView.sn_left = fromItem.sn_left - distance;
             [self xxxxWithDirection:isToLeft center:_itemLineView.center.x];
@@ -323,6 +351,10 @@ static NSString * SNTabBarBgClr = @"ffffff";
     };
     
     CGRect toFrame = CGRectMake(toItem.sn_left, _itemLineView.sn_top, toItem.sn_width, _itemLineView.sn_height);
+    if (self.fixedTipLineWith > 0) {
+        toFrame.origin.x = toItem.sn_left + (toItem.sn_width - self.fixedTipLineWith) * 0.5;
+        toFrame.size.width = self.fixedTipLineWith;
+    }
     if (animated) {
         [UIView animateWithDuration:0.3f animations:^{
             _itemLineView.frame = toFrame;
@@ -371,7 +403,6 @@ static NSString * SNTabBarBgClr = @"ffffff";
     }
 }
 
-
 - (void) setTabBarHeight:(CGFloat)tabBarHeight
 {
     if (_tabBarHeight == tabBarHeight) {
@@ -379,6 +410,20 @@ static NSString * SNTabBarBgClr = @"ffffff";
     }
     _tabBarHeight = tabBarHeight;
     
+    [self tryRelayout];
+}
+
+- (void) setMinItemWidth:(CGFloat)minItemWidth
+{
+    if (_minItemWidth == minItemWidth) {
+        return;
+    }
+    _minItemWidth = minItemWidth;
+    
+    [self tryRelayout];
+}
+
+- (void) tryRelayout {
     if (_layouted) {
         [self relayout];
     }
@@ -413,6 +458,8 @@ static NSString * SNTabBarBgClr = @"ffffff";
     }
     if (itemWidth < self.minItemWidth) {
         itemWidth = self.minItemWidth;
+    } else if (self.maxItemWidth > 0 && itemWidth > self.maxItemWidth) {
+        itemWidth = self.maxItemWidth;
     }
     
     SNTabBarItem *lastItem = nil;
@@ -432,6 +479,15 @@ static NSString * SNTabBarBgClr = @"ffffff";
     _itemLineView.hidden = (allowSelectedCount <= 1);
     
     _layouted = YES;
+    if (self.onContentWidthChanged) {
+        [self performSelector:@selector(delayCallContentWidthChanged) withObject:nil afterDelay:0];
+    }
+}
+
+- (void) delayCallContentWidthChanged {
+    if (self.onContentWidthChanged) {
+        self.onContentWidthChanged(self.scrollView.contentSize.width, self);
+    }
 }
 
 - (void) dealloc {
@@ -488,7 +544,7 @@ static NSString * SNTabBarBgClr = @"ffffff";
     _isAllowSelected = YES;
     _status = SNTabBarItemStatusNormal;
     
-    self.backgroundColor = SNTabBarBgClr.sn_color;
+    //    self.backgroundColor = SNTabBarBgClr.sn_color;
 }
 
 #pragma mark -
