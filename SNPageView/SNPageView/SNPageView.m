@@ -212,6 +212,10 @@
     }
     
     [self makeViewVisibleAtIndex:_currentIndex];
+    if (self.preloadNext) {
+        [self visibleViewAtIndex:_currentIndex + 1];
+        [self visibleViewAtIndex:_currentIndex - 1];
+    }
     
     if (!isBLoaded) {
         [self dispatchWillEventWithIndex:_currentIndex isAppear:YES];
@@ -325,6 +329,10 @@
     _currentIndex = [self validateOverIndex:[self negativeIndex:pageIndex]];
     
     [self makeViewVisibleAtIndex:self.currentIndex];
+    if (self.preloadNext) {
+        [self visibleViewAtIndex:_currentIndex + 1];
+        [self visibleViewAtIndex:_currentIndex - 1];
+    }
     
     [self dispatchDidEvents];
 }
@@ -521,6 +529,10 @@
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
     [self makeViewVisibleAtIndex:self.currentIndex];
+    if (self.preloadNext) {
+        [self visibleViewAtIndex:self.currentIndex + 1];
+        [self visibleViewAtIndex:self.currentIndex - 1];
+    }
     [self cleanupWillScrollStatus];
 }
 

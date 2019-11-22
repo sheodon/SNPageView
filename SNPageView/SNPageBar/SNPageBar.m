@@ -105,18 +105,13 @@
 
 - (UIView*) sn_pageView:(SNPageView *)pageView viewAtIndex:(NSInteger)index
 {
-    if (self.items.count <= index) {
-        return nil;
-    }
     SNPageBarItem *item = (SNPageBarItem*)self.items[index];
+    
     return item.contentView;
 }
 
 - (void) sn_pageView:(SNPageView *)pageView itemWillAppear:(SNPageViewItem *)item
 {
-    if (self.items.count <= item.index) {
-        return;
-    }
     SNPageBarItem *itemBar = (SNPageBarItem*)self.items[item.index];
     [itemBar selectedWill];
     
@@ -125,9 +120,6 @@
 
 - (void) sn_pageView:(SNPageView *)pageView itemWillDisappear:(SNPageViewItem *)item
 {
-    if (self.items.count <= item.index) {
-        return;
-    }
     SNPageBarItem *itemBar = (SNPageBarItem*)self.items[item.index];
     [itemBar unselectedWill];
     
@@ -145,9 +137,6 @@
 
 - (void) sn_pageView:(SNPageView *)pageView itemDidAppear:(SNPageViewItem *)item
 {
-    if (self.items.count <= item.index) {
-        return;
-    }
     SNPageBarItem *itemBar = (SNPageBarItem*)self.items[item.index];
     [itemBar selectedDid];
     
@@ -158,9 +147,6 @@
 
 - (void) sn_pageView:(SNPageView *)pageView itemDidDisappear:(SNPageViewItem *)item
 {
-    if (self.items.count <= item.index) {
-        return;
-    }
     SNPageBarItem *itemBar = (SNPageBarItem*)self.items[item.index];
     [itemBar unselectedDid];
     

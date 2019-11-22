@@ -43,6 +43,9 @@
 /// 屏蔽分发事件（default:0）
 @property (nonatomic, assign)   BOOL          blockDispatchEvent;
 
+///
+@property (nonatomic, assign)   BOOL          preloadNext;
+
 @property (nonatomic, readonly) UIScrollView  *scrollView;
 
 @property (nonatomic, weak) id<SNPageViewDelegate> delegate;
