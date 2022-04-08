@@ -576,9 +576,7 @@
     
     [self visibleViewAtIndex:pageIndex];
     
-    CGRect rect = CGRectMake([self positiveIndex:pageIndex] * self.sn_width, 0, self.sn_width, self.sn_height);
-    
-    [self.scrollView scrollRectToVisible:rect animated:NO];
+    self.scrollView.contentOffset = CGPointMake([self positiveIndex:pageIndex] * self.sn_width, 0);
     self.blockHandleDidScroll = NO;
 }
 
